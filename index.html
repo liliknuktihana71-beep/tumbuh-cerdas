@@ -28,6 +28,17 @@ section{padding:58px 6%}.section-head{max-width:760px;margin-bottom:28px}h2{font
 .unit strong{display:block}.unit small{color:var(--muted)}
 footer{padding:30px 6%;background:var(--sage-dark);color:#f8f5ed}
 @media(max-width:760px){header{align-items:flex-start;flex-direction:column}.hero{grid-template-columns:1fr;padding-top:48px}.principles,.features,.units{grid-template-columns:1fr}.hero-card{max-width:440px}section{padding:44px 5%}}
+
+.modal-backdrop{position:fixed;inset:0;background:#1d2b23b8;display:none;align-items:flex-start;justify-content:center;padding:24px 14px;overflow:auto;z-index:20}
+.modal-backdrop.open{display:flex}.lesson-modal{width:min(900px,100%);background:var(--paper);border-radius:22px;padding:clamp(20px,4vw,38px);position:relative;margin:auto;box-shadow:0 20px 70px #17251c55}
+.close-modal{position:sticky;top:0;float:right;border:0;border-radius:50%;width:42px;height:42px;font-size:1.4rem;background:#e8eee4;color:var(--sage-dark);cursor:pointer}
+.lesson-modal h2{padding-right:46px}.lesson-modal h3{color:var(--sage-dark);margin:24px 0 6px}.lesson-modal p,.lesson-modal li{color:#526257}
+.lesson-block{border-top:1px solid var(--line);padding-top:4px}.lesson-tag{display:inline-block;background:#e8eee4;color:var(--sage-dark);padding:5px 11px;border-radius:99px;font-size:.8rem;font-weight:700}
+.unit{cursor:pointer;transition:transform .18s,box-shadow .18s}.unit:hover,.unit:focus{transform:translateY(-3px);box-shadow:0 8px 22px #405b4917;outline:2px solid var(--sage)}
+.unit:focus{outline-offset:2px}.unit .open-hint{display:block;color:var(--terra);font-size:.78rem;margin-top:5px;font-weight:700}
+body.modal-open{overflow:hidden}
+@media(max-width:600px){.modal-backdrop{padding:8px}.lesson-modal{border-radius:16px}}
+
 </style>
 </head>
 <body>
@@ -70,8 +81,17 @@ footer{padding:30px 6%;background:var(--sage-dark);color:#f8f5ed}
   <div id="unit-list"></div>
 </section>
 </main>
+
+<div class="modal-backdrop" id="lesson-modal" role="dialog" aria-modal="true" aria-labelledby="lesson-title">
+ <article class="lesson-modal">
+  <button class="close-modal" id="close-lesson" aria-label="Tutup materi">×</button>
+  <div id="lesson-content"></div>
+ </article>
+</div>
+
 <footer><strong>Belajar Berdaya dan Bertumbuh</strong><br><span>Belajar dari pengalaman, memahami dengan mandiri, bertumbuh dengan percaya diri.</span></footer>
 <script>
+
 const semesters=[
 {title:"Semester 1 · Mengenal diri dan lingkungan",items:["Mengenal diri dan cara belajar","Angka di sekitar kita","Pecahan nyata","Bahasa di kehidupan","Menjadi peneliti kecil","Tubuh dan kesehatan","Lingkungan tempat tinggal","Uang dan kebutuhan","Proyek mini Blitarku"]},
 {title:"Semester 2 · Memahami dan menghubungkan konsep",items:["Pecahan, desimal, persen","Pengukuran","Geometri di rumah","Membaca informasi","Menulis laporan","Tumbuhan dan pertanian","Energi dalam kehidupan","Sejarah dan budaya Blitar","Proyek pasar sederhana"]},
@@ -79,7 +99,41 @@ const semesters=[
 {title:"Semester 4 · Mandiri dan berdampak",items:["Strategi matematika","Geometri dan desain","Statistik sederhana","Literasi media digital","Presentasi dan komunikasi","Ekonomi keluarga","Masyarakat dan kewargaan","Perencanaan proyek mandiri","Pameran karya"]}
 ];
 const root=document.getElementById('unit-list');
-semesters.forEach((s,si)=>{const wrap=document.createElement('div');wrap.className='semester';const h=document.createElement('h3');h.textContent=s.title;wrap.appendChild(h);const grid=document.createElement('div');grid.className='units';s.items.forEach((name,i)=>{const card=document.createElement('article');card.className='unit';const n=document.createElement('span');n.className='num';n.textContent=si*9+i+1;const body=document.createElement('div');const strong=document.createElement('strong');strong.textContent=name;const small=document.createElement('small');small.textContent='Unit pembelajaran · Fase C';body.append(strong,small);card.append(n,body);grid.appendChild(card)});wrap.appendChild(grid);root.appendChild(wrap)});
+const modalEl=document.getElementById('lesson-modal');
+const lessonContent=document.getElementById('lesson-content');
+const closeLesson=()=>{modalEl.classList.remove('open');document.body.classList.remove('modal-open')};
+const unitOne={
+goal:"Murid mengenali kekuatan, minat, kebiasaan, dan kebutuhan belajarnya serta mulai memilih strategi belajar yang sesuai.",
+materials:["Buku atau kertas jurnal","Pensil atau alat tulis warna","Kartu aktivitas sederhana","Benda yang mewakili minat murid (buku, alat gambar, benda alam, atau alat permainan edukatif)"],
+demo:"Guru mencontohkan cara mengamati sebuah benda: melihat dengan teliti, menyebutkan cirinya, mengajukan pertanyaan, lalu mencatat temuan. Guru juga mencontohkan cara mengisi jurnal belajar tanpa memberi label bahwa satu cara belajar lebih baik daripada cara lainnya.",
+practice:["Pilih satu benda yang menarik perhatianmu. Amati selama beberapa menit.","Catat atau gambarkan tiga hal yang kamu temukan dan satu pertanyaan yang muncul.","Coba pelajari satu informasi singkat melalui membaca, mengamati gambar, atau praktik sederhana.","Tuliskan cara yang paling membantumu memahami informasi tersebut dan alasannya."],
+challenge:"Buat peta diriku sebagai pembelajar. Tampilkan satu hal yang sudah kamu kuasai, satu hal yang ingin kamu pelajari, tantangan yang mungkin muncul, dan langkah kecil untuk mengatasinya.",
+evaluation:["Murid dapat menyebutkan minimal satu kekuatan atau minat dirinya.","Murid dapat menceritakan pengalaman ketika berhasil memahami sesuatu.","Murid dapat memilih satu strategi belajar dan menjelaskan alasannya."],
+reflection:["Apa hal baru yang saya ketahui tentang diri saya?","Kegiatan mana yang paling membantu saya memahami sesuatu?","Apa satu langkah yang akan saya coba pada kegiatan belajar berikutnya?"],
+portfolio:"Simpan peta diriku sebagai pembelajar dan satu catatan refleksi dalam portofolio."
+};
+function makeList(items){return '<ul>'+items.map(x=>'<li>'+x+'</li>').join('')+'</ul>'}
+function openUnit(number,name){
+ const ready=number===1;
+ const data=ready?unitOne:null;
+ lessonContent.innerHTML='<span class="lesson-tag">UNIT '+String(number).padStart(2,'0')+' · FASE C</span><h2 id="lesson-title">'+name+'</h2>'+
+ (ready?'<p class="muted">Misi belajar: mengenali diri sebagai pembelajar yang terus bertumbuh.</p>':
+ '<p class="muted">Ruang materi unit ini sudah disiapkan. Rangkaian kegiatan akan dilengkapi bertahap agar sesuai dengan tujuan dan konteks pembelajaran.</p>')+
+ '<div class="lesson-block"><h3>1. Tujuan Pembelajaran</h3><p>'+(data?data.goal:'Tujuan khusus unit ini akan ditambahkan pada pengembangan materi.')+'</p></div>'+
+ '<div class="lesson-block"><h3>2. Alat dan Bahan</h3>'+(data?makeList(data.materials):'<p>Alat dan bahan akan disesuaikan dengan aktivitas unit.</p>')+'</div>'+
+ '<div class="lesson-block"><h3>3. Demonstrasi</h3><p>'+(data?data.demo:'Contoh demonstrasi guru akan disiapkan sebagai pengantar aktivitas.')+'</p></div>'+
+ '<div class="lesson-block"><h3>4. Praktik</h3>'+(data?makeList(data.practice):'<p>Langkah praktik mandiri dan eksplorasi akan dikembangkan untuk unit ini.</p>')+'</div>'+
+ '<div class="lesson-block"><h3>5. Tantangan</h3><p>'+(data?data.challenge:'Tantangan penerapan konsep dalam situasi nyata akan ditambahkan.')+'</p></div>'+
+ '<div class="lesson-block"><h3>6. Evaluasi</h3>'+(data?makeList(data.evaluation):'<p>Kriteria evaluasi akan ditambahkan sesuai tujuan pembelajaran.</p>')+'</div>'+
+ '<div class="lesson-block"><h3>7. Refleksi</h3>'+(data?makeList(data.reflection):'<p>Pertanyaan refleksi akan disiapkan untuk membantu murid menghubungkan pengalaman dengan pemahaman.')+'</div>'+
+ '<div class="lesson-block"><h3>8. Portofolio</h3><p>'+(data?data.portfolio:'Bukti proses dan hasil belajar yang perlu disimpan akan ditentukan pada pengembangan unit.')+'</p></div>';
+ modalEl.classList.add('open');document.body.classList.add('modal-open');document.getElementById('close-lesson').focus();
+}
+semesters.forEach((s,si)=>{const wrap=document.createElement('div');wrap.className='semester';const h=document.createElement('h3');h.textContent=s.title;wrap.appendChild(h);const grid=document.createElement('div');grid.className='units';s.items.forEach((name,i)=>{const number=si*9+i+1;const card=document.createElement('article');card.className='unit';card.tabIndex=0;card.setAttribute('role','button');card.setAttribute('aria-label','Buka Unit '+number+': '+name);const n=document.createElement('span');n.className='num';n.textContent=number;const body=document.createElement('div');const strong=document.createElement('strong');strong.textContent=name;const small=document.createElement('small');small.textContent='Unit pembelajaran · Fase C';const hint=document.createElement('span');hint.className='open-hint';hint.textContent='Klik untuk membuka materi ↗';body.append(strong,small,hint);card.append(n,body);card.addEventListener('click',()=>openUnit(number,name));card.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();openUnit(number,name)}});grid.appendChild(card)});wrap.appendChild(grid);root.appendChild(wrap)});
+document.getElementById('close-lesson').addEventListener('click',closeLesson);
+modalEl.addEventListener('click',e=>{if(e.target===modalEl)closeLesson()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&modalEl.classList.contains('open'))closeLesson()});
+
 </script>
 </body>
 </html>
