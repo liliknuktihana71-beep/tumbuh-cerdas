@@ -39,6 +39,18 @@ footer{padding:30px 6%;background:var(--sage-dark);color:#f8f5ed}
 body.modal-open{overflow:hidden}
 @media(max-width:600px){.modal-backdrop{padding:8px}.lesson-modal{border-radius:16px}}
 
+
+/* Aktivitas digital murid */
+.digital-work{margin-top:26px;padding:20px;background:#f4f6ef;border:1px solid #dce5d8;border-radius:16px}
+.digital-work label{display:block;font-weight:700;margin:14px 0 6px;color:var(--sage-dark)}
+.digital-work input,.digital-work textarea,.digital-work select{width:100%;padding:12px;border:1px solid #cbd7ca;border-radius:10px;background:white;color:var(--ink);font:inherit}
+.digital-work textarea{min-height:82px;resize:vertical}
+.work-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+.work-actions button{border:0;border-radius:999px;padding:11px 17px;background:var(--sage-dark);color:white;font-weight:700;cursor:pointer}
+.work-actions button.secondary{background:#e5eadf;color:var(--sage-dark)}
+.save-note{font-size:.88rem;color:var(--sage-dark);margin-top:10px}
+@media print{body *{visibility:hidden!important}.lesson-modal,.lesson-modal *{visibility:visible!important}.modal-backdrop{position:static;display:block!important;background:white;padding:0;overflow:visible}.lesson-modal{box-shadow:none;width:100%;margin:0;padding:0}.close-modal,.work-actions,.save-note{display:none!important}.digital-work{break-inside:avoid}}
+
 </style>
 </head>
 <body>
@@ -116,17 +128,36 @@ function makeList(items){return '<ul>'+items.map(x=>'<li>'+x+'</li>').join('')+'
 function openUnit(number,name){
  const ready=number===1;
  const data=ready?unitOne:null;
+ const savedKey='tumbuhcerdas-unit-'+number;
+ const saved=JSON.parse(localStorage.getItem(savedKey)||'{}');
  lessonContent.innerHTML='<span class="lesson-tag">UNIT '+String(number).padStart(2,'0')+' · FASE C</span><h2 id="lesson-title">'+name+'</h2>'+
  (ready?'<p class="muted">Misi belajar: mengenali diri sebagai pembelajar yang terus bertumbuh.</p>':
- '<p class="muted">Ruang materi unit ini sudah disiapkan. Rangkaian kegiatan akan dilengkapi bertahap agar sesuai dengan tujuan dan konteks pembelajaran.</p>')+
+ '<p class="muted">Materi lengkap unit ini sedang disusun. Setiap unit akan memiliki penjelasan, contoh, aktivitas interaktif, tantangan, evaluasi, dan portofolio digital.</p>')+
  '<div class="lesson-block"><h3>1. Tujuan Pembelajaran</h3><p>'+(data?data.goal:'Tujuan khusus unit ini akan ditambahkan pada pengembangan materi.')+'</p></div>'+
- '<div class="lesson-block"><h3>2. Alat dan Bahan</h3>'+(data?makeList(data.materials):'<p>Alat dan bahan akan disesuaikan dengan aktivitas unit.</p>')+'</div>'+
- '<div class="lesson-block"><h3>3. Demonstrasi</h3><p>'+(data?data.demo:'Contoh demonstrasi guru akan disiapkan sebagai pengantar aktivitas.')+'</p></div>'+
- '<div class="lesson-block"><h3>4. Praktik</h3>'+(data?makeList(data.practice):'<p>Langkah praktik mandiri dan eksplorasi akan dikembangkan untuk unit ini.</p>')+'</div>'+
+ '<div class="lesson-block"><h3>2. Alat dan Bahan</h3>'+(data?'<p>Perangkat untuk membaca dan mengisi aktivitas di website. Benda di sekitar rumah boleh digunakan jika kamu ingin mengamati secara langsung.</p>':'<p>Perangkat digital dan bahan sederhana sesuai aktivitas unit.</p>')+'</div>'+
+ '<div class="lesson-block"><h3>3. Demonstrasi</h3><p>'+(data?data.demo:'Contoh demonstrasi akan disiapkan sebagai pengantar aktivitas.')+'</p></div>'+
+ '<div class="lesson-block"><h3>4. Praktik</h3>'+(data?makeList(data.practice):'<p>Langkah praktik mandiri akan dikembangkan untuk unit ini.</p>')+'</div>'+
  '<div class="lesson-block"><h3>5. Tantangan</h3><p>'+(data?data.challenge:'Tantangan penerapan konsep dalam situasi nyata akan ditambahkan.')+'</p></div>'+
  '<div class="lesson-block"><h3>6. Evaluasi</h3>'+(data?makeList(data.evaluation):'<p>Kriteria evaluasi akan ditambahkan sesuai tujuan pembelajaran.</p>')+'</div>'+
- '<div class="lesson-block"><h3>7. Refleksi</h3>'+(data?makeList(data.reflection):'<p>Pertanyaan refleksi akan disiapkan untuk membantu murid menghubungkan pengalaman dengan pemahaman.')+'</div>'+
- '<div class="lesson-block"><h3>8. Portofolio</h3><p>'+(data?data.portfolio:'Bukti proses dan hasil belajar yang perlu disimpan akan ditentukan pada pengembangan unit.')+'</p></div>';
+ '<div class="lesson-block"><h3>7. Refleksi</h3>'+(data?makeList(data.reflection):'<p>Pertanyaan refleksi akan disiapkan.</p>')+'</div>'+
+ '<div class="lesson-block"><h3>8. Portofolio</h3><p>'+(data?data.portfolio:'Bukti proses dan hasil belajar akan ditentukan pada pengembangan unit.')+'</p></div>'+
+ (ready?'<section class="digital-work"><span class="lesson-tag">JURNAL DIGITALKU</span><h3>Yuk, isi langsung di website!</h3><p>Ketik jawabanmu pada kotak berikut. Jawaban tersimpan otomatis di perangkat yang sedang kamu gunakan.</p>'+
+ '<label for="student-name">Namaku</label><input id="student-name" data-answer="name" placeholder="Tulis namamu">'+
+ '<label for="my-interest">1. Hal yang aku sukai atau kuasai</label><textarea id="my-interest" data-answer="interest" placeholder="Aku suka ... karena ..."></textarea>'+
+ '<label for="my-observation">2. Tiga hal yang aku amati dari benda atau gambar pilihan</label><textarea id="my-observation" data-answer="observation" placeholder="Pertama ... Kedua ... Ketiga ..."></textarea>'+
+ '<label for="my-question">3. Pertanyaan yang muncul di pikiranku</label><textarea id="my-question" data-answer="question" placeholder="Aku ingin tahu ..."></textarea>'+
+ '<label for="my-strategy">4. Cara belajar yang paling membantuku</label><select id="my-strategy" data-answer="strategy"><option value="">Pilih salah satu</option><option>Membaca penjelasan</option><option>Melihat gambar atau contoh</option><option>Mendengarkan penjelasan</option><option>Mencoba langsung</option><option>Berdiskusi</option><option>Kombinasi beberapa cara</option></select>'+
+ '<label for="my-reason">Mengapa cara itu membantuku?</label><textarea id="my-reason" data-answer="reason" placeholder="Cara itu membantuku karena ..."></textarea>'+
+ '<label for="my-strength">5. Satu hal yang sudah aku kuasai</label><textarea id="my-strength" data-answer="strength" placeholder="Aku sudah bisa ..."></textarea>'+
+ '<label for="my-goal">6. Satu hal yang ingin aku pelajari</label><textarea id="my-goal" data-answer="goal" placeholder="Aku ingin belajar ..."></textarea>'+
+ '<label for="my-challenge">7. Tantangan yang mungkin kuhadapi dan langkah mengatasinya</label><textarea id="my-challenge" data-answer="challenge" placeholder="Tantanganku ... Langkah kecilku ..."></textarea>'+
+ '<label for="my-reflection">8. Refleksi: hal baru apa yang aku ketahui tentang diriku?</label><textarea id="my-reflection" data-answer="reflection" placeholder="Hari ini aku mengetahui ..."></textarea>'+
+ '<div class="work-actions"><button type="button" id="print-work">Cetak / Simpan PDF</button><button type="button" class="secondary" id="clear-work">Hapus isian</button></div><p class="save-note" id="save-note" aria-live="polite">Isian disimpan otomatis pada perangkat ini. Gunakan perangkat dan browser yang sama untuk membukanya kembali.</p></section>':'');
+ if(ready){
+  lessonContent.querySelectorAll('[data-answer]').forEach(el=>{el.value=saved[el.dataset.answer]||'';el.addEventListener('input',()=>{const values={};lessonContent.querySelectorAll('[data-answer]').forEach(field=>values[field.dataset.answer]=field.value);localStorage.setItem(savedKey,JSON.stringify(values));document.getElementById('save-note').textContent='Tersimpan otomatis ✓';});});
+  document.getElementById('print-work').addEventListener('click',()=>window.print());
+  document.getElementById('clear-work').addEventListener('click',()=>{if(confirm('Hapus semua jawaban pada unit ini?')){localStorage.removeItem(savedKey);lessonContent.querySelectorAll('[data-answer]').forEach(el=>el.value='');document.getElementById('save-note').textContent='Isian telah dihapus.';}});
+ }
  modalEl.classList.add('open');document.body.classList.add('modal-open');document.getElementById('close-lesson').focus();
 }
 semesters.forEach((s,si)=>{const wrap=document.createElement('div');wrap.className='semester';const h=document.createElement('h3');h.textContent=s.title;wrap.appendChild(h);const grid=document.createElement('div');grid.className='units';s.items.forEach((name,i)=>{const number=si*9+i+1;const card=document.createElement('article');card.className='unit';card.tabIndex=0;card.setAttribute('role','button');card.setAttribute('aria-label','Buka Unit '+number+': '+name);const n=document.createElement('span');n.className='num';n.textContent=number;const body=document.createElement('div');const strong=document.createElement('strong');strong.textContent=name;const small=document.createElement('small');small.textContent='Unit pembelajaran · Fase C';const hint=document.createElement('span');hint.className='open-hint';hint.textContent='Klik untuk membuka materi ↗';body.append(strong,small,hint);card.append(n,body);card.addEventListener('click',()=>openUnit(number,name));card.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();openUnit(number,name)}});grid.appendChild(card)});wrap.appendChild(grid);root.appendChild(wrap)});
